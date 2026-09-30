@@ -1,19 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { AuthContext } from "@/contexts/AuthContext";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
 
 export function RegisterPage() {
+  const { signUp } = useContext(AuthContext);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [authError, setAuthError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const validate = () => {
     const newErrors = {};
@@ -51,15 +56,28 @@ export function RegisterPage() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess(false);
+    setAuthError("");
 
     const validationErrors = validate();
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      setSuccess(true);
+      setSubmitting(true);
+      try {
+        const { error } = await signUp(email.trim(), password);
+        if (error) {
+          setAuthError(error.message || "Registration failed");
+        } else {
+          setSuccess(true);
+        }
+      } catch (err) {
+        setAuthError(err.message || "An unexpected error occurred");
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
@@ -94,13 +112,25 @@ export function RegisterPage() {
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md px-4">
         <Card className="border border-white/60 dark:border-gray-800/80 bg-white/85 dark:bg-gray-900/85 backdrop-blur-xl shadow-xl rounded-2xl">
           <CardContent className="pt-6">
+            {/* Supabase Error Message */}
+            {authError && (
+              <div
+                data-testid="error-auth"
+                className="mb-5 p-3 rounded-md bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-sm flex items-center gap-2"
+              >
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <span>{authError}</span>
+              </div>
+            )}
+
+            {/* Success Message */}
             {success && (
               <div
                 data-testid="form-success"
                 className="mb-5 p-3 rounded-md bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-900 text-green-700 dark:text-green-300 text-sm flex items-center gap-2"
               >
                 <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
-                <span>Registration successful (demo)</span>
+                <span>Registration successful</span>
               </div>
             )}
 
@@ -270,14 +300,15 @@ export function RegisterPage() {
               <Button
                 type="submit"
                 data-testid="register-submit"
+                disabled={submitting}
                 className="w-full mt-2"
               >
-                Create Account
+                {submitting ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center border-t border-gray-100 dark:border-gray-800 p-4 text-xs text-gray-500">
-            FER202 Lab 2 Form Validation
+            FER202 Lab 3 Authentication
           </CardFooter>
         </Card>
       </div>

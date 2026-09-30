@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "@/contexts/AuthContext";
 import { products } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ShoppingBag } from "lucide-react";
 
 export function HomePage() {
+  const { user, signOut } = useContext(AuthContext);
+
   return (
     <div className="min-h-screen bg-transparent text-gray-900 dark:text-gray-100 flex flex-col relative">
       {/* Navigation Header */}
@@ -17,20 +20,44 @@ export function HomePage() {
           </Link>
 
           <nav className="flex items-center gap-3">
-            <Link
-              to="/login"
-              data-testid="btn-login"
-              className={buttonVariants({ variant: "outline", size: "sm" })}
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              data-testid="btn-register"
-              className={buttonVariants({ variant: "default", size: "sm" })}
-            >
-              Register
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  to="/account"
+                  data-testid="user-email"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  title="View Account"
+                >
+                  {user.email}
+                </Link>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  data-testid="btn-logout"
+                  onClick={() => signOut()}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  data-testid="btn-login"
+                  className={buttonVariants({ variant: "outline", size: "sm" })}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  data-testid="btn-register"
+                  className={buttonVariants({ variant: "default", size: "sm" })}
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       </header>

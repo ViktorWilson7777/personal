@@ -1,17 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "@/contexts/AuthContext";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
+import { ShoppingBag, ArrowLeft, AlertCircle } from "lucide-react";
 
 export function LoginPage() {
+  const { signIn } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const [success, setSuccess] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const validate = () => {
     const newErrors = {};
@@ -33,15 +38,28 @@ export function LoginPage() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccess(false);
+    setAuthError("");
 
     const validationErrors = validate();
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      setSuccess(true);
+      setSubmitting(true);
+      try {
+        const { error } = await signIn(email.trim(), password);
+        if (error) {
+          setAuthError(error.message || "Invalid login credentials");
+        } else {
+          // On success, redirect to /
+          navigate("/");
+        }
+      } catch (err) {
+        setAuthError(err.message || "An unexpected error occurred");
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
@@ -76,13 +94,14 @@ export function LoginPage() {
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md px-4">
         <Card className="border border-white/60 dark:border-gray-800/80 bg-white/85 dark:bg-gray-900/85 backdrop-blur-xl shadow-xl rounded-2xl">
           <CardContent className="pt-6">
-            {success && (
+            {/* Supabase Error Message */}
+            {authError && (
               <div
-                data-testid="form-success"
-                className="mb-5 p-3 rounded-md bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-900 text-green-700 dark:text-green-300 text-sm flex items-center gap-2"
+                data-testid="error-auth"
+                className="mb-5 p-3 rounded-md bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-sm flex items-center gap-2"
               >
-                <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
-                <span>Login successful (demo)</span>
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <span>{authError}</span>
               </div>
             )}
 
@@ -167,14 +186,15 @@ export function LoginPage() {
               <Button
                 type="submit"
                 data-testid="login-submit"
+                disabled={submitting}
                 className="w-full mt-2"
               >
-                Sign In
+                {submitting ? "Signing in..." : "Sign In"}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center border-t border-gray-100 dark:border-gray-800 p-4 text-xs text-gray-500">
-            FER202 Lab 2 Form Validation
+            FER202 Lab 3 Authentication
           </CardFooter>
         </Card>
       </div>
