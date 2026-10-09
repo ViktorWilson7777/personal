@@ -1,9 +1,9 @@
 import React from "react";
+import Link from "next/link";
 import { CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
-import { TextAnimation } from "@/components/ui/stagger-text";
 import { GlowBorderCard } from "@/components/ui/glow-border-card";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { ArrowRight } from "lucide-react";
 
 export function ProductCard({ product }) {
   return (
@@ -15,43 +15,60 @@ export function ProductCard({ product }) {
     >
       <div>
         <div className="relative aspect-video w-full overflow-hidden bg-gray-50 dark:bg-gray-800/50">
-          <img
-            data-testid="product-image"
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
+          <Link href={`/products/${product.id}`} className="block w-full h-full">
+            <img
+              data-testid="product-image"
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+          </Link>
+          <div className="absolute top-3 right-3 z-10">
+            <FavoriteButton productId={product.id} />
+          </div>
         </div>
+
         <CardHeader className="p-5 pb-2">
+          <div className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">
+            {product.category}
+          </div>
           <CardTitle
             data-testid="product-name"
-            className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 line-clamp-1"
+            className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 line-clamp-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            {product.name}
+            <Link href={`/products/${product.id}`}>
+              {product.name}
+            </Link>
           </CardTitle>
           <CardDescription
             data-testid="product-description"
-            className="text-sm text-gray-500 dark:text-gray-400 mt-1.5"
+            className="text-sm text-gray-500 dark:text-gray-400 mt-1.5 line-clamp-2"
           >
-            <TextAnimation divideBy="word">
-              {product.description}
-            </TextAnimation>
+            {product.description}
           </CardDescription>
         </CardHeader>
       </div>
 
       <CardFooter className="flex items-center justify-between p-5 pt-3 border-t border-gray-100 dark:border-gray-800 mt-auto">
-        <span
-          data-testid="product-price"
-          className="text-xl font-bold text-gray-900 dark:text-white"
+        <div>
+          <span className="text-xs text-gray-400 block font-normal">Price</span>
+          <span
+            data-testid="product-price"
+            className="text-xl font-bold text-gray-900 dark:text-white"
+          >
+            ${typeof product.price === "number" ? product.price.toFixed(2) : product.price}
+          </span>
+        </div>
+
+        <Link
+          href={`/products/${product.id}`}
+          data-testid="link-detail"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors group-hover:translate-x-0.5 transition-transform"
         >
-          {product.price}
-        </span>
-        <Button size="sm" className="gap-2">
-          <ShoppingCart className="h-4 w-4" />
-          <span>Add to Cart</span>
-        </Button>
+          <span>View Details</span>
+          <ArrowRight className="h-4 w-4" />
+        </Link>
       </CardFooter>
     </GlowBorderCard>
   );

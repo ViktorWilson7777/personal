@@ -1,24 +1,26 @@
-import React, { useContext, useEffect } from "react";
-import { Link, useNavigate, Navigate } from "react-router-dom";
-import { AuthContext } from "@/contexts/AuthContext";
+"use client";
+
+import React, { useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, User, LogOut, ArrowLeft, ShieldCheck } from "lucide-react";
+import { ShoppingBag, User, LogOut, ArrowLeft, ShieldCheck, Heart } from "lucide-react";
 
-export function AccountPage() {
-  const { user, loading, signOut } = useContext(AuthContext);
-  const navigate = useNavigate();
+export default function AccountPage() {
+  const { user, loading, signOut } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate("/login", { replace: true });
+      router.replace("/login");
     }
-  }, [loading, user, navigate]);
+  }, [loading, user, router]);
 
-  // While loading session, render nothing or spinner
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center">
+      <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           <p className="text-sm text-gray-500 dark:text-gray-400">Loading account...</p>
@@ -27,24 +29,23 @@ export function AccountPage() {
     );
   }
 
-  // If unauthenticated and not loading, redirect immediately to /login
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return null;
   }
 
   const handleLogout = async () => {
     await signOut();
-    navigate("/", { replace: true });
+    router.push("/");
   };
 
   return (
     <div
       data-testid="account-page"
-      className="min-h-screen bg-transparent flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative"
+      className="flex-1 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative"
     >
       <div className="sm:mx-auto sm:w-full sm:max-w-md px-4">
         <Link
-          to="/"
+          href="/"
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -52,7 +53,10 @@ export function AccountPage() {
         </Link>
 
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center gap-3 text-blue-600 dark:text-blue-400 hover:opacity-90 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center gap-3 text-blue-600 dark:text-blue-400 hover:opacity-90 transition-opacity"
+          >
             <ShoppingBag className="h-8 w-8 sm:h-9 sm:w-9 stroke-[2.2]" />
             <span className="font-brand text-4xl sm:text-5xl font-normal tracking-wide">Windy</span>
           </Link>
@@ -93,21 +97,27 @@ export function AccountPage() {
 
             <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400 px-1">
               <ShieldCheck className="h-4 w-4" />
-              <span>Session active & protected route verified</span>
+              <span>Session active &amp; protected route verified</span>
             </div>
           </CardContent>
 
           <CardFooter className="flex flex-col gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+            <Link href="/favorites" className="w-full">
+              <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                <Heart className="h-4 w-4 text-rose-500" />
+                <span>View My Favorites</span>
+              </Button>
+            </Link>
             <Button
               variant="destructive"
-              className="w-full flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center gap-2 cursor-pointer"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4" />
               <span>Sign Out</span>
             </Button>
-            <Link to="/" className="w-full">
-              <Button variant="outline" className="w-full">
+            <Link href="/" className="w-full">
+              <Button variant="ghost" className="w-full">
                 Continue Shopping
               </Button>
             </Link>
@@ -117,5 +127,3 @@ export function AccountPage() {
     </div>
   );
 }
-
-export default AccountPage;

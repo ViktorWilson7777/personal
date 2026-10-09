@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "@/contexts/AuthContext";
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, ArrowLeft, AlertCircle } from "lucide-react";
 
-export function LoginPage() {
-  const { signIn } = useContext(AuthContext);
-  const navigate = useNavigate();
+export default function LoginPage() {
+  const { signIn } = useAuth();
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,7 +54,7 @@ export function LoginPage() {
           setAuthError(error.message || "Invalid login credentials");
         } else {
           // On success, redirect to /
-          navigate("/");
+          router.push("/");
         }
       } catch (err) {
         setAuthError(err.message || "An unexpected error occurred");
@@ -64,10 +65,10 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-transparent flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative">
+    <div className="flex-1 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative">
       <div className="sm:mx-auto sm:w-full sm:max-w-md px-4">
         <Link
-          to="/"
+          href="/"
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -75,7 +76,10 @@ export function LoginPage() {
         </Link>
 
         <div className="flex justify-center">
-          <Link to="/" className="flex items-center gap-3 text-blue-600 dark:text-blue-400 hover:opacity-90 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center gap-3 text-blue-600 dark:text-blue-400 hover:opacity-90 transition-opacity"
+          >
             <ShoppingBag className="h-8 w-8 sm:h-9 sm:w-9 stroke-[2.2]" />
             <span className="font-brand text-4xl sm:text-5xl font-normal tracking-wide">Windy</span>
           </Link>
@@ -85,7 +89,7 @@ export function LoginPage() {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           Or{" "}
-          <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+          <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
             create a new account
           </Link>
         </p>
@@ -187,19 +191,17 @@ export function LoginPage() {
                 type="submit"
                 data-testid="login-submit"
                 disabled={submitting}
-                className="w-full mt-2"
+                className="w-full mt-2 cursor-pointer"
               >
                 {submitting ? "Signing in..." : "Sign In"}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center border-t border-gray-100 dark:border-gray-800 p-4 text-xs text-gray-500">
-            FER202 Lab 3 Authentication
+            FER202 Authentication &bull; Supabase Protected
           </CardFooter>
         </Card>
       </div>
     </div>
   );
 }
-
-export default LoginPage;

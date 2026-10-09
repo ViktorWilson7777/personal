@@ -1,8 +1,21 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ShaderGradientCanvas, ShaderGradient } from "shadergradient";
 
 export function ShaderBackground() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(handle);
+  }, []);
+
+  if (!mounted) {
+    return <div className="fixed inset-0 -z-50 bg-gradient-to-br from-slate-50 via-white to-sky-50 dark:from-gray-950 dark:via-gray-900 dark:to-slate-950 pointer-events-none" />;
+  }
+
   return (
     <div className="fixed inset-0 -z-50 pointer-events-none w-screen h-screen overflow-hidden">
       <ShaderGradientCanvas
