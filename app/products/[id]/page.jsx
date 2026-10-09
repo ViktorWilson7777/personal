@@ -69,9 +69,6 @@ export default async function ProductDetailPage({ params }) {
               alt={product.name}
               className="w-full h-full object-cover"
             />
-            <div className="absolute top-4 right-4 z-10">
-              <FavoriteButton productId={product.id} className="shadow-lg scale-110" />
-            </div>
           </div>
 
           {/* Details Column */}

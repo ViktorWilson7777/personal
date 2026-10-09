@@ -114,7 +114,10 @@ export default function FavoritesPage() {
                 <div className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">
                   {product.category}
                 </div>
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 line-clamp-1">
+                <h3
+                  data-testid="product-name"
+                  className="font-semibold text-lg text-gray-900 dark:text-gray-100 line-clamp-1"
+                >
                   {product.name}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
@@ -123,7 +126,10 @@ export default function FavoritesPage() {
               </div>
 
               <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                <span className="text-xl font-bold text-gray-900 dark:text-white">
+                <span
+                  data-testid="product-price"
+                  className="text-xl font-bold text-gray-900 dark:text-white"
+                >
                   ${typeof product.price === "number" ? product.price.toFixed(2) : product.price}
                 </span>
 
