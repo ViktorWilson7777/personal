@@ -94,12 +94,10 @@ function ReviewsInner({ productId }) {
   };
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete your review?")) {
-      try {
-        await deleteReview();
-      } catch (err) {
-        alert(err.message || "Failed to delete review");
-      }
+    try {
+      await deleteReview();
+    } catch (err) {
+      console.error("Failed to delete review:", err);
     }
   };
 
@@ -245,7 +243,7 @@ function ReviewsInner({ productId }) {
             </h3>
 
             {/* Hidden product_id */}
-            <input type="hidden" {...register("product_id", { valueAsNumber: true })} />
+            <input type="hidden" {...register("product_id", { valueAsNumber: true })} value={Number(productId)} />
 
             {/* Rating Selector */}
             <div>
