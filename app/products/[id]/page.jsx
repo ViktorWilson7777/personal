@@ -2,6 +2,8 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products } from "@/data/products";
+import { getReviewsForProduct } from "@/lib/reviews";
+import ReviewsSection from "@/components/ReviewsSection";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { ArrowLeft, Tag, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 
@@ -41,6 +43,8 @@ export default async function ProductDetailPage({ params }) {
   if (!product) {
     notFound();
   }
+
+  const reviewsData = await getReviewsForProduct(product.id);
 
   return (
     <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -144,6 +148,12 @@ export default async function ProductDetailPage({ params }) {
             </div>
           </div>
         </div>
+
+        {/* Reviews & Ratings Section */}
+        <ReviewsSection
+          productId={product.id}
+          initialReviews={reviewsData.reviews}
+        />
       </div>
     </div>
   );
