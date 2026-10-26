@@ -5,8 +5,12 @@ import { supabase } from "@/lib/supabaseClient";
 import { reviewSchema } from "@/lib/reviewSchema";
 import { products } from "@/data/products";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const defaultUrl = "https://jmerauzuflwenwxvtzml.supabase.co";
+const defaultKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptZXJhdXp1Zmx3ZW53eHZ0em1sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDUwNzEsImV4cCI6MjEwNjMyMTA3MX0.C6mLcLlOkJed6eN56Ry2WSdjVIVDo7dqN-hWYgG-HEY";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || defaultUrl;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || defaultKey;
 
 export async function POST(request) {
   try {
